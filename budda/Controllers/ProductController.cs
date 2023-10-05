@@ -1,4 +1,5 @@
-﻿using budda.DAL;
+﻿using budda.BLL;
+using budda.DAL;
 using budda.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -12,26 +13,19 @@ namespace budda.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        List<Product> products = new List<Product>
-        {
-            // dapper orm  https://habr.com/ru/articles/665836
-            new Product { Id = 1, ProductName = "xyz1", Price = 999, Description = "xxx" },
-            new Product { Id = 2, ProductName = "xyz2", Price = 999, Description = "yyy" },
-            new Product { Id = 3, ProductName = "xyz3", Price = 999, Description = "zzz" }
-        };
-
+        private readonly ProductBLL _productLogic = new ProductBLL();
         // GET: api/<ProductController>
         [HttpGet]
-        public IEnumerable<Product> Get()
+        public IEnumerable<Product> GetProduct()
         {
-            return products;
+            return _productLogic.GetProduct();
         }
 
         // GET api/<ProductController>/5
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var product = products.FirstOrDefault(p => p.Id == id);
+            var product = _productLogic.Get(id);
             if (product == null)
                 return NotFound();
 
@@ -42,8 +36,7 @@ namespace budda.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Product product)
         {
-            product.Id = products.Max(p => p.Id) + 1;
-            products.Add(product);
+            _productLogic.Post(product);
 
             return CreatedAtAction(nameof(Get), new { id = product.Id }, product);
         }
@@ -52,11 +45,13 @@ namespace budda.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Product updatedProduct)
         {
-            var product = products.FirstOrDefault(p => p.Id == id);
-            if (product == null)
+            var existingProduct = _productLogic.Get(id);
+            if (existingProduct == null)
                 return NotFound();
 
-            product.ProductName = updatedProduct.ProductName;
+            existingProduct.ProductName = updatedProduct.ProductName;
+
+            _productLogic.Put(existingProduct);
 
             return NoContent();
         }
@@ -65,11 +60,11 @@ namespace budda.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var product = products.FirstOrDefault(p => p.Id == id);
+            var product = _productLogic.Get(id);
             if (product == null)
                 return NotFound();
 
-            products.Remove(product);
+            _productLogic.Delete(id);
 
             return NoContent();
         }
