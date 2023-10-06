@@ -1,74 +1,51 @@
 ﻿using budda.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace budda.Controllers
+[ApiController]
+[Route("api/order")]
+public class OrderController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class OrdersController : ControllerBase
+    private readonly OrderBLL _orderBLL;
+
+    public OrderController(OrderBLL orderBLL)
     {
-        private List<Order> orders = new List<Order>
-        {
-            new Order { Id = 1, CustomerName = "Customer1", OrderId = 1 },
-            new Order { Id = 2, CustomerName = "Customer2", OrderId = 2 },
-            new Order { Id = 3, CustomerName = "Customer3", OrderId = 3 }
-        };
+        _orderBLL = orderBLL;
+    }
 
-        // GET: api/Orders
-        [HttpGet]
-        public IEnumerable<Order> Get()
+    [HttpPost("create")]
+    public IActionResult CreateOrder([FromBody] Order order)
+    {
+        var createdOrder = _orderBLL.CreateOrder(order);
+        return Ok(createdOrder);
+    }
+
+    [HttpGet("{id}")]
+    public IActionResult GetOrder(int id)
+    {
+        var order = _orderBLL.GetOrder(id);
+        if (order == null)
         {
-            return orders;
+            return NotFound();
         }
+        return Ok(order);
+    }
 
-        // GET api/Orders/5
-        [HttpGet("{id}")]
-        public IActionResult Get(int id)
-        {
-            var order = orders.FirstOrDefault(o => o.Id == id);
-            if (order == null)
-                return NotFound();
+    [Authorize]
+    [HttpGet("user")]
+    public IActionResult GetUserOrders()
+    {
+        var userId = HttpContext.User.Identity.Name;
 
-            return Ok(order);
-        }
+        var userOrders = _orderBLL.GetUserOrders(userId);
+        return Ok(userOrders);
+    }
 
-        // POST api/Orders
-        [HttpPost]
-        public IActionResult Post([FromBody] Order order)
-        {
-            order.Id = orders.Max(o => o.Id) + 1;
-            orders.Add(order);
-
-            return CreatedAtAction(nameof(Get), new { id = order.Id }, order);
-        }
-
-        // PUT api/Orders/5
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Order updatedOrder)
-        {
-            var order = orders.FirstOrDefault(o => o.Id == id);
-            if (order == null)
-                return NotFound();
-
-            order.CustomerName = updatedOrder.CustomerName;
-
-            return NoContent();
-        }
-
-        // DELETE api/Orders/5
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            var order = orders.FirstOrDefault(o => o.Id == id);
-            if (order == null)
-                return NotFound();
-
-            orders.Remove(order);
-
-            return NoContent();
-        }
+    [HttpPut("{id}")]
+    public IActionResult UpdateOrder(int id, [FromBody] string newStatus)
+    {
+        _orderBLL.UpdateOrder(id, newStatus);
+        return Ok("Order status updated successfully");
     }
 }

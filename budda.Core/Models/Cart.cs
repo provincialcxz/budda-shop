@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using budda.Models;
 
 namespace budda.Core.Models
 {
     public class Cart
     {
-
+        public List<Product> Product_list { get; set; }
+        public int total_price { get; set; }
+        public int total_quantity { get; set;}
     }
 }
