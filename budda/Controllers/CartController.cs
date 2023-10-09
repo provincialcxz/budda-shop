@@ -1,43 +1,48 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using budda.BLL;
+using budda.Core.Models;
+using budda.Models;
 
 namespace budda.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/user")]
     [ApiController]
-    public class CartController : ControllerBase
+    public class UserController : ControllerBase
     {
-        // GET: api/<CartController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly UserBLL _userBLL = new UserBLL();
+
+        public UserController(UserBLL user_BLL)
         {
-            return new string[] { "value1", "value2" };
+            _userBLL = user_BLL;
         }
 
-        // GET api/<CartController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("{userId}/cart")]
+        public IActionResult GetUserCart(int userId)
         {
-            return "value";
+            var cart = _userBLL.GetUserCart(userId);
+            return Ok(cart);
         }
 
-        // POST api/<CartController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("{userId}/cart/add")]
+        public IActionResult AddProductToCart(int userId, [FromBody] Product product)
         {
+            var productId = product.Id;
+            _userBLL.AddProductToCart(userId, productId);
+            return Ok("Product added to cart successfully");
         }
 
-        // PUT api/<CartController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut("{userId}/cart")]
+        public IActionResult UpdateUserCart(int userId, [FromBody] Cart cart)
         {
+            _userBLL.UpdateUserCart(userId, cart);
+            return Ok("User cart updated successfully");
         }
 
-        // DELETE api/<CartController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("{userId}/cart/{productId}")]
+        public IActionResult RemoveProductFromCart(int userId, int productId)
         {
+            _userBLL.RemoveProductFromCart(userId, productId);
+            return Ok("Product removed from cart successfully");
         }
     }
 }

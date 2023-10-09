@@ -10,7 +10,7 @@ namespace budda.BLL
 
         public UserBLL(UserDAO userDAO)
         {
-            _userDAO = userDAO;
+            _userDAO = user_DAO;
         }
 
         public User GetUserById(int id)

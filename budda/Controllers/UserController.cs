@@ -10,17 +10,17 @@ namespace budda.Controllers
     [Route("api/user")]
     public class UserController : ControllerBase
     {
-        private readonly UserBLL _userBLL;
+        private readonly UserBLL userBLL;
 
         public UserController(UserBLL userBLL)
         {
-            _userBLL = userBLL;
+            userBLL = user_BLL;
         }
 
         [HttpGet("{id}")]
         public IActionResult GetUserById(int id)
         {
-            var user = _userBLL.GetUserById(id);
+            var user = userBLL.GetUserById(id);
             if (user == null)
             {
                 return NotFound();
@@ -31,7 +31,7 @@ namespace budda.Controllers
         [HttpGet("email/{email}")]
         public IActionResult GetUserByEmail(string email)
         {
-            var user = _userBLL.GetUserByEmail(email);
+            var user = userBLL.GetUserByEmail(email);
             if (user == null)
             {
                 return NotFound();
@@ -43,14 +43,14 @@ namespace budda.Controllers
         public IActionResult RegisterUser([FromBody] User user)
         {
             // можно сделать проверку перед регистрацией
-            _userBLL.RegisterUser(user);
+            userBLL.RegisterUser(user);
             return Ok("User registered successfully");
         }
 
         [HttpPost("login")]
         public IActionResult LoginUser([FromBody] User user)
         {
-            var loggedInUser = _userBLL.LoginUser(user.mail, user.Password);
+            var loggedInUser = userBLL.LoginUser(user.mail, user.Password);
             if (loggedInUser == null)
             {
                 return BadRequest("Login failed");
@@ -62,7 +62,7 @@ namespace budda.Controllers
         [HttpPut("profile")]
         public IActionResult UpdateProfile([FromBody] User user)
         {
-            _userBLL.UpdateProfile(user);
+            userBLL.UpdateProfile(user);
             return Ok("Profile updated successfully");
         }
 
@@ -70,7 +70,7 @@ namespace budda.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteUser(int id)
         {
-            _userBLL.DeleteUser(id);
+            userBLL.DeleteUser(id);
             return Ok("User deleted successfully");
         }
     }
