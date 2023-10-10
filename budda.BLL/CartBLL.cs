@@ -5,31 +5,28 @@ namespace budda.BLL
 {
     public class UserBLL
     {
-        private readonly UserDAO userDAO;
-
-        public UserBLL(UserDAO user_DAO)
+        public List<Cart> GetCart()
         {
-            _userDAO = user_DAO;
+            var dal = new CartDAO();
+            return dal.GetCart();
         }
 
-        public Cart GetUserCart(int userId)
+        public void Post(Cart cart)
         {
-            return _userDAO.GetUserCart(userId);
+            var dal = new CartDAO();
+            dal.Post(cart);
         }
 
-        public void AddProductToCart(int userId, int productId, int quantity)
+        public void Put(Cart cart)
         {
-            _userDAO.AddProductToCart(userId, productId, quantity);
+            var dal = new CartDAO();
+            dal.Put(cart);
         }
 
-        public void UpdateUserCart(int userId, Cart cart)
+        public void Delete(int id)
         {
-            _userDAO.UpdateUserCart(userId, cart);
-        }
-
-        public void RemoveProductFromCart(int userId, int productId)
-        {
-            _userDAO.RemoveProductFromCart(userId, productId);
+            var dal = new CartDAO();
+            dal.Delete(id);
         }
     }
 }

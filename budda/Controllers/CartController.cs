@@ -1,48 +1,51 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using budda.BLL;
 using budda.Core.Models;
-using budda.Models;
 
 namespace budda.Controllers
 {
-    [Route("api/user")]
+    [Route("api/cart")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class CartController : ControllerBase
     {
-        private readonly UserBLL _userBLL = new UserBLL();
+        private readonly CartBLL _cartBLL;
 
-        public UserController(UserBLL user_BLL)
+        public CartController(CartBLL cartBLL)
         {
-            _userBLL = user_BLL;
+            _cartBLL = cartBLL;
         }
 
-        [HttpGet("{userId}/cart")]
-        public IActionResult GetUserCart(int userId)
+        // GET: api/cart
+        [HttpGet]
+        public IActionResult GetCarts()
         {
-            var cart = _userBLL.GetUserCart(userId);
-            return Ok(cart);
+            var carts = _cartBLL.GetCart();
+            return Ok(carts);
         }
 
-        [HttpPost("{userId}/cart/add")]
-        public IActionResult AddProductToCart(int userId, [FromBody] Product product)
+        // POST: api/cart
+        [HttpPost]
+        public IActionResult PostCart([FromBody] Cart cart)
         {
-            var productId = product.Id;
-            _userBLL.AddProductToCart(userId, productId);
-            return Ok("Product added to cart successfully");
+            _cartBLL.Post(cart);
+            return Ok("Cart created successfully");
         }
 
-        [HttpPut("{userId}/cart")]
-        public IActionResult UpdateUserCart(int userId, [FromBody] Cart cart)
+        // PUT: api/cart/{id}
+        [HttpPut("{id}")]
+        public IActionResult PutCart(int id, [FromBody] Cart cart)
         {
-            _userBLL.UpdateUserCart(userId, cart);
-            return Ok("User cart updated successfully");
+            cart.ProductId = id;
+            _cartBLL.Put(cart);
+            return Ok("Cart updated successfully");
         }
 
-        [HttpDelete("{userId}/cart/{productId}")]
-        public IActionResult RemoveProductFromCart(int userId, int productId)
+        // DELETE: api/cart/{id}
+        [HttpDelete("{id}")]
+        public IActionResult DeleteCart(int id)
         {
-            _userBLL.RemoveProductFromCart(userId, productId);
-            return Ok("Product removed from cart successfully");
+            _cartBLL.Delete(id);
+            return Ok("Cart deleted successfully");
         }
     }
 }

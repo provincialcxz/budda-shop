@@ -1,52 +1,46 @@
-﻿using System.Data;
-using Dapper;
 using budda.Core.Models;
+using Dapper;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace budda.DAL
 {
-    public class UserDAO
+    public class CartDAO
     {
-        private readonly string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Cart;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+        private readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Cart;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
-        public Cart GetUserCart(int userId)
+        public List<Cart> GetCart()
         {
-            using (IDbConnection db = new SqlConnection(connectionString))
+            using (IDbConnection db = new SqlConnection(_connectionString))
             {
-
-                var cart = db.QueryFirstOrDefault<Cart>("SELECT * FROM UserCarts WHERE UserId = @userId", new { userId });
-                if (cart == null)
-                {
-                    return new Cart();
-                }
-                return cart;
+                return db.Query<Cart>("SELECT * FROM Cart").ToList();
             }
         }
 
-        public void AddProductToCart(int userId, int productId, int quantity)
+        public void Post(Cart cart)
         {
-            using (IDbConnection db = new SqlConnection(connectionString))
+            using (IDbConnection db = new SqlConnection(_connectionString))
             {
-                db.Execute("INSERT INTO UserCartItems (UserId, ProductId, Quantity) VALUES (@userId, @productId, @quantity)", 
-                            new { userId, productId, quantity });
+                var sqlQuery = "INSERT INTO Cart (Product_list, total_price, total_quantity) VALUES (@Product_list, @total_price, @total_quantity)";
+                db.Execute(sqlQuery, cart);
             }
         }
 
-        public void UpdateUserCart(int userId, Cart cart)
+        public void Put(Cart cart)
         {
-            using (IDbConnection db = new SqlConnection(connectionString))
+            using (IDbConnection db = new SqlConnection(_connectionString))
             {
-                db.Execute("UPDATE UserCarts SET Product_list = @Product_list, total_price = @total_price, total_quantity = @total_quantity WHERE UserId = @userId",
-                            new { userId, cart.Product_list, cart.total_price, cart.total_quantity });
+                var sqlQuery = ("UPDATE Cart SET total_price = @total_price, total_quantity = @total_quantity WHERE ProductId = @ProductId");
+                db.Execute(sqlQuery, cart);
             }
         }
 
-        public void RemoveProductFromCart(int userId, int productId)
+        public void Delete(int id)
         {
-            using (IDbConnection db = new SqlConnection(connectionString))
+            using (IDbConnection db = new SqlConnection(_connectionString))
             {
-                db.Execute("DELETE FROM UserCartItems WHERE UserId = @userId AND ProductId = @productId",
-                            new { userId, productId });
+                var sqlQuery = ("DELETE FROM Cart WHERE ProductId = @ProductId");
+                db.Execute(sqlQuery, new { id });
             }
         }
     }
