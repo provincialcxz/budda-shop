@@ -1,43 +1,51 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using budda.BLL;
+using budda.Core.Models;
 
 namespace budda.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/cart")]
     [ApiController]
     public class CartController : ControllerBase
     {
-        // GET: api/<CartController>
+        private readonly CartBLL _cartBLL;
+
+        public CartController(CartBLL cartBLL)
+        {
+            _cartBLL = cartBLL;
+        }
+
+        // GET: api/cart
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult GetCarts()
         {
-            return new string[] { "value1", "value2" };
+            var carts = _cartBLL.GetCart();
+            return Ok(carts);
         }
 
-        // GET api/<CartController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<CartController>
+        // POST: api/cart
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult PostCart([FromBody] Cart cart)
         {
+            _cartBLL.Post(cart);
+            return Ok("Cart created successfully");
         }
 
-        // PUT api/<CartController>/5
+        // PUT: api/cart/{id}
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult PutCart(int id, [FromBody] Cart cart)
         {
+            cart.ProductId = id;
+            _cartBLL.Put(cart);
+            return Ok("Cart updated successfully");
         }
 
-        // DELETE api/<CartController>/5
+        // DELETE: api/cart/{id}
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult DeleteCart(int id)
         {
+            _cartBLL.Delete(id);
+            return Ok("Cart deleted successfully");
         }
     }
 }

@@ -12,7 +12,7 @@ namespace budda.Core.Models
         public string Name { get; set; }
         public string mail { get; set; }
         public string Password { get; set; }
-        public string UserName { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
         
     }
 }

@@ -1,74 +1,52 @@
-﻿using budda.Models;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
+using budda.BLL;
+using budda.Models;
 
 namespace budda.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/categories")]
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private List<Category> categories = new List<Category>
-        {
-            new Category { Id = 1, Name = "Category1" },
-            new Category { Id = 2, Name = "Category2" },
-            new Category { Id = 3, Name = "Category3" }
-        };
+        private readonly CategoriesBLL _categoriesBLL;
 
-        // GET: api/Categories
+        public CategoriesController(CategoriesBLL categoriesBLL)
+        {
+            _categoriesBLL = categoriesBLL;
+        }
+
+        // GET: api/categories
         [HttpGet]
-        public IEnumerable<Category> Get()
+        public IActionResult GetCategories()
         {
-            return categories;
+            var categories = _categoriesBLL.GetCategory();
+            return Ok(categories);
         }
 
-        // GET api/Categories/5
-        [HttpGet("{id}")]
-        public IActionResult Get(int id)
-        {
-            var category = categories.FirstOrDefault(c => c.Id == id);
-            if (category == null)
-                return NotFound();
-
-            return Ok(category);
-        }
-
-        // POST api/Categories
+        // POST: api/categories
         [HttpPost]
-        public IActionResult Post([FromBody] Category category)
+        public IActionResult PostCategory([FromBody] Category category)
         {
-            category.Id = categories.Max(c => c.Id) + 1;
-            categories.Add(category);
-
-            return CreatedAtAction(nameof(Get), new { id = category.Id }, category);
+            _categoriesBLL.Post(category);
+            return Ok("Category created successfully");
         }
 
-        // PUT api/Categories/5
+        // PUT: api/categories/{id}
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Category updatedCategory)
+        public IActionResult PutCategory(int id, [FromBody] Category category)
         {
-            var category = categories.FirstOrDefault(c => c.Id == id);
-            if (category == null)
-                return NotFound();
-
-            category.Name = updatedCategory.Name;
-
-            return NoContent();
+            category.Id = id;
+            _categoriesBLL.Put(category);
+            return Ok("Category updated successfully");
         }
 
-        // DELETE api/Categories/5
+        // DELETE: api/categories/{id}
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult DeleteCategory(int id)
         {
-            var category = categories.FirstOrDefault(c => c.Id == id);
-            if (category == null)
-                return NotFound();
-
-            categories.Remove(category);
-
-            return NoContent();
+            _categoriesBLL.Delete(id);
+            return Ok("Category deleted successfully");
         }
     }
 }
