@@ -1,43 +1,77 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System;
+using budda.BLL;
+using budda.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace budda.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/user")]
     public class UserController : ControllerBase
     {
-        // GET: api/<UserController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly UserBLL userBLL;
+
+        public UserController(UserBLL userBLL)
         {
-            return new string[] { "value1", "value2" };
+            userBLL = user_BLL;
         }
 
-        // GET api/<UserController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult GetUserById(int id)
         {
-            return "value";
+            var user = userBLL.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
         }
 
-        // POST api/<UserController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpGet("email/{email}")]
+        public IActionResult GetUserByEmail(string email)
         {
+            var user = userBLL.GetUserByEmail(email);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
         }
 
-        // PUT api/<UserController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPost("register")]
+        public IActionResult RegisterUser([FromBody] User user)
         {
+            // можно сделать проверку перед регистрацией
+            userBLL.RegisterUser(user);
+            return Ok("User registered successfully");
         }
 
-        // DELETE api/<UserController>/5
+        [HttpPost("login")]
+        public IActionResult LoginUser([FromBody] User user)
+        {
+            var loggedInUser = userBLL.LoginUser(user.mail, user.Password);
+            if (loggedInUser == null)
+            {
+                return BadRequest("Login failed");
+            }
+            return Ok("Login successful");
+        }
+
+        [Authorize]
+        [HttpPut("profile")]
+        public IActionResult UpdateProfile([FromBody] User user)
+        {
+            userBLL.UpdateProfile(user);
+            return Ok("Profile updated successfully");
+        }
+
+        [Authorize]
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult DeleteUser(int id)
         {
+            userBLL.DeleteUser(id);
+            return Ok("User deleted successfully");
         }
     }
 }

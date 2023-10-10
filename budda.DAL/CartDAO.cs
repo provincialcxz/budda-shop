@@ -1,13 +1,7 @@
-﻿using budda.Core.Models;
-using budda.Models;
+using budda.Core.Models;
 using Dapper;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace budda.DAL
 {
@@ -40,7 +34,7 @@ namespace budda.DAL
                 db.Execute(sqlQuery, cart);
             }
         }
-        //// доделать удаление
+
         public void Delete(int id)
         {
             using (IDbConnection db = new SqlConnection(_connectionString))
