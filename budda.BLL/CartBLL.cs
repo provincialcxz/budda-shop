@@ -3,7 +3,7 @@ using budda.DAL;
 
 namespace budda.BLL
 {
-    public class UserBLL
+    public class CartBLL
     {
         public List<Cart> GetCart()
         {

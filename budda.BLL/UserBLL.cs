@@ -6,41 +6,28 @@ namespace budda.BLL
 {
     public class UserBLL
     {
-        private readonly UserDAO _userDAO;
-
-        public UserBLL(UserDAO userDAO)
+        public User Get(int id)
         {
-            _userDAO = user_DAO;
+            var dal = new UserDAO();
+            return dal.Get(id);
         }
 
-        public User GetUserById(int id)
+        public void Post(User user)
         {
-            return _userDAO.GetUserById(id);
+            var dal = new UserDAO();
+            dal.Post(user);
         }
 
-        public User GetUserByEmail(string email)
+        public void Put(User user)
         {
-            return _userDAO.GetUserByEmail(email);
+            var dal = new UserDAO();
+            dal.Put(user);
         }
 
-        public void RegisterUser(User user) // можно добавить проверку пароля
+        public void Delete(int id)
         {
-            _userDAO.RegisterUser(user);
-        }
-
-        public User LoginUser(string email, string password)
-        {
-            return _userDAO.LoginUser(email, password);
-        }
-
-        public void UpdateProfile(User user)
-        {
-            _userDAO.UpdateProfile(user);
-        }
-
-        public void DeleteUser(int userId)
-        {
-            _userDAO.DeleteUser(userId);
+            var dal = new UserDAO();
+            dal.Delete(id);
         }
     }
 }

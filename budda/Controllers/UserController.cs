@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using budda.BLL;
+﻿using budda.BLL;
 using budda.Core.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
 namespace budda.Controllers
@@ -10,68 +9,53 @@ namespace budda.Controllers
     [Route("api/user")]
     public class UserController : ControllerBase
     {
-        private readonly UserBLL userBLL;
-
-        public UserController(UserBLL userBLL)
-        {
-            userBLL = user_BLL;
-        }
+        private readonly UserBLL _userLogic = new UserBLL();
 
         [HttpGet("{id}")]
-        public IActionResult GetUserById(int id)
+        public IActionResult Get(int id)
         {
-            var user = userBLL.GetUserById(id);
+            var user = _userLogic.Get(id);
             if (user == null)
-            {
                 return NotFound();
-            }
+
             return Ok(user);
         }
 
-        [HttpGet("email/{email}")]
-        public IActionResult GetUserByEmail(string email)
+        // POST api/<UserController>
+        [HttpPost]
+        public IActionResult Post([FromBody] User user)
         {
-            var user = userBLL.GetUserByEmail(email);
-            if (user == null)
-            {
+            _userLogic.Post(user);
+
+            return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
+        }
+
+        // PUT api/<UserController>/5
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody] User updatedUser)
+        {
+            var existingUser = _userLogic.Get(id);
+            if (existingUser == null)
                 return NotFound();
-            }
-            return Ok(user);
-        }
 
-        [HttpPost("register")]
-        public IActionResult RegisterUser([FromBody] User user)
-        {
-            // можно сделать проверку перед регистрацией
-            userBLL.RegisterUser(user);
-            return Ok("User registered successfully");
-        }
+            existingUser.Name = updatedUser.Name;
 
-        [HttpPost("login")]
-        public IActionResult LoginUser([FromBody] User user)
-        {
-            var loggedInUser = userBLL.LoginUser(user.mail, user.Password);
-            if (loggedInUser == null)
-            {
-                return BadRequest("Login failed");
-            }
-            return Ok("Login successful");
-        }
+            _userLogic.Put(existingUser);
 
-        [Authorize]
-        [HttpPut("profile")]
-        public IActionResult UpdateProfile([FromBody] User user)
-        {
-            userBLL.UpdateProfile(user);
-            return Ok("Profile updated successfully");
+            return NoContent();
         }
 
         [Authorize]
         [HttpDelete("{id}")]
-        public IActionResult DeleteUser(int id)
+        public IActionResult Delete(int id)
         {
-            userBLL.DeleteUser(id);
-            return Ok("User deleted successfully");
+            var user = _userLogic.Get(id);
+            if (user == null)
+                return NotFound();
+
+            _userLogic.Delete(id);
+
+            return NoContent();
         }
     }
 }
