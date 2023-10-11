@@ -1,16 +1,19 @@
 ﻿using budda.BLL;
 using budda.Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using budda.BLL;
+using budda.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace budda.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/user")]
     public class UserController : ControllerBase
     {
         private readonly UserBLL _userLogic = new UserBLL();
 
-        // GET api/<UserController>/5
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
@@ -45,7 +48,7 @@ namespace budda.Controllers
             return NoContent();
         }
 
-        // DELETE api/<UserController>/5
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

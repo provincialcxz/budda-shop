@@ -1,15 +1,9 @@
 ﻿using budda.Core.Models;
 using budda.DAL;
-using budda.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace budda.BLL
 {
-    public class CartBLL
+    public class UserBLL
     {
         public List<Cart> GetCart()
         {
