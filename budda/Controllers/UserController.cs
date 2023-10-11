@@ -1,9 +1,6 @@
 ﻿using budda.BLL;
 using budda.Core.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using budda.BLL;
-using budda.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 
 namespace budda.Controllers
