@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+﻿using budda.BLL;
+using budda.Core.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace budda.Controllers
 {
@@ -8,36 +8,54 @@ namespace budda.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        // GET: api/<UserController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
+        private readonly UserBLL _userLogic = new UserBLL();
 
         // GET api/<UserController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
+            var user = _userLogic.Get(id);
+            if (user == null)
+                return NotFound();
+
+            return Ok(user);
         }
 
         // POST api/<UserController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult Post([FromBody] User user)
         {
+            _userLogic.Post(user);
+
+            return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
         }
 
         // PUT api/<UserController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult Put(int id, [FromBody] User updatedUser)
         {
+            var existingUser = _userLogic.Get(id);
+            if (existingUser == null)
+                return NotFound();
+
+            existingUser.Name = updatedUser.Name;
+
+            _userLogic.Put(existingUser);
+
+            return NoContent();
         }
 
         // DELETE api/<UserController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            var user = _userLogic.Get(id);
+            if (user == null)
+                return NotFound();
+
+            _userLogic.Delete(id);
+
+            return NoContent();
         }
     }
 }
